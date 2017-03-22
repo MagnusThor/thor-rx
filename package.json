@@ -6,6 +6,20 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "Magnus Thor",
-  "license": "ISC"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MagnusThor/thor-rx.git"
+  },
+  "author": {
+    "name": "Magnus Thor",
+    "email": "magnus.thor74@gmail.com"
+  },
+  "keywords": [
+    "ES6",
+    "observable",
+    "rx",
+    "tracking",
+    "typescript"
+  ],
+  "license": "MIT"
 }
