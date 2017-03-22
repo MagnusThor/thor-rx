@@ -7,8 +7,9 @@ export declare class Location extends ThorRxBase {
 }
 export declare class Person extends ThorRxBase {
     fullName: string;
-    skills: Array<string>;
     location: Location;
+    age: number;
     constructor();
+    getAge(): number;
     onChange(target: any, key: string, newValue: any, oldValue: any): void;
 }

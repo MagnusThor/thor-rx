@@ -1,13 +1,11 @@
+export declare function Observe(isObserved: boolean, fn?: Function): (t: any, k: string) => never;
 export declare class ThorRxBase {
     constructor();
     onChange(target: Object, key: PropertyKey, newValue: any, oldValue: any): void;
 }
-export declare class ThorRxHandler<T> implements ProxyHandler<T> {
-    constructor();
-}
 export declare class ThorRx<T extends ThorRxBase> {
-    private instance;
+    private obj;
     private proxyHandler;
-    constructor(instance: any);
+    constructor(obj: any);
     getObserver(): T;
 }

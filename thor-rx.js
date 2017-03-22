@@ -1,4 +1,10 @@
 "use strict";
+function Observe(isObserved, fn) {
+    return function (t, k) {
+        throw "not yet implemented..";
+    };
+}
+exports.Observe = Observe;
 class ThorRxBase {
     constructor() {
     }
@@ -10,10 +16,9 @@ class ThorRxHandler {
     constructor() {
     }
 }
-exports.ThorRxHandler = ThorRxHandler;
 class ThorRx {
-    constructor(instance) {
-        this.instance = instance;
+    constructor(obj) {
+        this.obj = obj;
         this.proxyHandler = new ThorRxHandler();
         this.proxyHandler.set = (target, key, value, receiver) => {
             const oldValue = Reflect.get(target, key, receiver);
@@ -31,7 +36,7 @@ class ThorRx {
         };
     }
     getObserver() {
-        return new Proxy(this.instance, this.proxyHandler);
+        return new Proxy(this.obj, this.proxyHandler);
     }
 }
 exports.ThorRx = ThorRx;
