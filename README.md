@@ -1,8 +1,9 @@
 # thor-rx
 ThorRx is a tiny Proxy based lib for
-deliverering events and change records to keep track of mutations.
+deliverering events and change records to keep track of mutations on objects (models).
 When a property is modified on an thor-rx 'observed' instance 
-thor-rx will fire events that helps you keep track of changes in a smooth way.
+thor-rx will deliver change notifications 
+that helps you keep track of changes in a smooth way.
 
 ## Installation
 
@@ -13,57 +14,75 @@ thor-rx will fire events that helps you keep track of changes in a smooth way.
 
 Below follows a brief documentation.
 
-## ThorRx&lt;T extends ThorRxBase &gt;(obj:any):ThorRx&lt;T&gt;
+## ThorRx&lt;T extends ThorRxBase &gt;(obj:any, (changes:ChangeModel) =>void):ThorRx&lt;T&gt;
 
 Create a new thor-rx observer
 
-    let rx = new ThorRx<T>(instance); 
+    let rx = new ThorRx<T>(instance,(changes:ChangeModel) => {}); 
 
 ### getObserver():T
 
-Get a thor-rx instance of T 
+Get a thor-rx instance of type T.  T is the proxied instances of yours. 
 
     observerOfT = rx.getObserver();
 
 
  #### example
 
- Where we have an object(class) Person 
+ Where we have an object(Model) Person 
 
       let person = new Person();
 
-      let rx = new ThorRx<T>(person); 
+      let rx = new ThorRx<T>(person , (changes:ChangeModel) => {
+            // do op with changes
+      }); 
 
       let rxPerson= rx.getObserver();
 
       // rx person is now a observed (Proxied) instance of Person
-      
+
+
+## ChangeModel
+
+Change model contains information about the current change.
+
+    class ChangeModel {
+        target: any;
+        type: string;
+        newValue: any;
+        oldValue: any;
+        timeStamp: Date;
+        constructor(target: any, type: string, newValue: any, oldValue: any);
+        }
+
+### Change type's
+
+An change type can be as follows: add, removed and update.  
+add and remove relates to Array properties. 
+
 
 ## ThorRxBase
 
-The objects you wich to observe must derive (extends) from ThorRxBase
-and implement the event handler (method) onChange
+The objects you wich to observe must derive (extends) from 
+ThorRxBase.
 
-### onChange(target: Object, key: PropertyKey, newValue: any, oldValue: any): void;
+     class MyModel extends ThorRxBase{
+         constructor(){
+             super(); 
+             ..
+         }
+     }
 
-Then a ThorRx a property on an observed object (class) is modified
-the onChange event will fire and report the change. 
+### observe(target:any) : void
 
-#### example
+Make an property / target of the class that derives from ThorRxBase 
+an observable. Will report changes when modified
 
-    class MyClass extends ThorRxBase
-    {
-        prop1: number;
-        constructor(){
-            super(); 
-        }
-        onChange(target: Object, key: PropertyKey, newValue: any, oldValue: any){
-        
-            // will fire then prop1 is modified...
-            
-        }
-        
-    }
+### unobserve(target:any): void 
+
+Makes a properry ( target) a non observable. Will not report changes when modified
+
+
 
 # Decorators
 
@@ -71,86 +90,61 @@ Decorators lets you by decorating properties of your objects(classes)
 gain control of what attributes that thor-rx captures mutations on.
 By default the property is observed.
 
-### @Observe(isObserve:boolean,?fn:Function):void
+### @Observe(isObserve:boolean)
 
 if an @Observe decorator exists on a property , you can control it
 by settig isObserve:boolean to true/false, if fn:Function is
 defined fn will be the Fn to be called on property mutations.
 
-Note: not yet implemented ( public )
+Note: will not affect newable properties. See observe and unobserve above.
 
 #### example
 
     class Person{
 
         @Observe(false) fullName:string;
-        @Observe(true,(a,b,c,d) => {
-            console.log("age modified to",c )  
-        }) age:number
-
+        @Observe(true) age:number
+        ...
     }
-
 
 # Example ( Quick guide )
 
 The example below creates an thor-rx observer for Person (class) 
 
-    let personObserver = new ThorRx<Person>(new Person()); 
-
+    let personObserver = new ThorRx<Person>(new Person(), (change:ChangeModel) => {
+         // do op's with the change
+    }); 
 
 Where person look needs to extend ThorRxBase such as
 
     class Person extends ThorRxBase {
         fullName:string
         constructor(){
+            super();
         }
-    }
-    
-futher on your class that derives from ThorRxBase needs to 
-implement the onChange(...) method.
-
-    class Person extends ThorRxBase {
-        fullName:string
-        constructor(){
-        }
-
-        onChange(target: any, key:string, newValue:any, oldValue:any) {
-              // do ops with the change..
-        }
-    }
-
+    }    
 
 To get an observer instance you need to call .getObserver():T such as below.
 
-    let personObserver = new ThorRx<Person>(new Person());
-
-    let person =  personObserver.getObserver()
-
-    
-
-As we derived from ThorRxBase and implemented the onChange method 
-the "settter" on the properties of Person will fire the onChange events, such 
-as below.
-
-
-    let personObserver = new ThorRx<Person>(new Person());
+    let personObserver = new ThorRx<Person>(new Person(),(change:ChangeModel) => {
+        // do op's with the change
+    });
 
     let person =  personObserver.getObserver()
 
     person.fullName = "Sven Erik Magnusson";
 
-Setting the property .fullName will the fire the onChange events 
+Setting the property .fullName will deliver (fire) the changes 
+handler you provded , in this example 
 
+    (change:ChangeModel) => {
+
+        // do op
+
+    }
+
+# Roadmap / Todo
+
+    -
 
     
-
-
-
-
-
-
-
-
-
-
-

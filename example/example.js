@@ -15,41 +15,30 @@ class Location extends thor_rx_1.ThorRxBase {
         this.lat = lat;
         this.lng = lng;
     }
-    onChange(target, key, newValue, oldValue) {
-        console.log("a change occured on Location '" + key + "' to '" + newValue + "', prior value was '" + oldValue + "'");
-    }
 }
 exports.Location = Location;
-class Person extends thor_rx_1.ThorRxBase {
+class MyModel extends thor_rx_1.ThorRxBase {
     constructor() {
         super();
-        this.age = 10;
+        this.skills = new Array();
         this.location = new Location(69, 13);
-    }
-    getAge() {
-        return this.age;
-    }
-    onChange(target, key, newValue, oldValue) {
-        console.log("a change occured on Person '" + key + "' to '" + newValue + "', prior value was '" + oldValue + "'");
     }
 }
 __decorate([
-    thor_rx_1.Observe(false, () => {
-        console.log("bohhh!");
-    }), 
-    __metadata('design:type', Number)
-], Person.prototype, "age", void 0);
-exports.Person = Person;
-console.log("\nExample 1");
-let personObserver = new thor_rx_1.ThorRx(new Person());
-let person = personObserver.getObserver();
-person.fullName = "John Doe";
-person.location.lat = 55;
-person.location.lng = 18;
-console.log("\n");
-console.log("Age = ", person.getAge());
-console.log("\n");
-console.log("\n");
-console.log(person);
-console.log("\n");
+    thor_rx_1.Observe(false), 
+    __metadata('design:type', Location)
+], MyModel.prototype, "location", void 0);
+__decorate([
+    thor_rx_1.Observe(false), 
+    __metadata('design:type', Array)
+], MyModel.prototype, "skills", void 0);
+exports.MyModel = MyModel;
+let myModel = new thor_rx_1.ThorRx(new MyModel(), (change) => {
+    console.log("change", change.newValue);
+}).getObserver();
+myModel.location.lat = 69.3;
+myModel.skills.push("c++");
+myModel.skills.push("typescript");
+myModel.skills.push("javascript");
+myModel.fullName = "Doc Holliday";
 //# sourceMappingURL=example.js.map

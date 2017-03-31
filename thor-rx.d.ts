@@ -1,11 +1,22 @@
-export declare function Observe(isObserved: boolean, fn?: Function): (t: any, k: string) => never;
+import 'reflect-metadata';
+export declare function Observe(isObserved: boolean): (target: any, key: string) => void;
 export declare class ThorRxBase {
     constructor();
-    onChange(target: Object, key: PropertyKey, newValue: any, oldValue: any): void;
+    observe(target: any): void;
+    unobserve(target: any): void;
+}
+export declare class ChangeModel {
+    target: any;
+    type: string;
+    newValue: any;
+    oldValue: any;
+    timeStamp: Date;
+    constructor(target: any, type: string, newValue: any, oldValue: any);
 }
 export declare class ThorRx<T extends ThorRxBase> {
     private obj;
+    private fnChanges;
     private proxyHandler;
-    constructor(obj: any);
+    constructor(obj: any, fnChanges: (change: ChangeModel) => void);
     getObserver(): T;
 }

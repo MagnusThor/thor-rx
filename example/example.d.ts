@@ -3,13 +3,10 @@ export declare class Location extends ThorRxBase {
     lat: number;
     lng: number;
     constructor(lat: number, lng: number);
-    onChange(target: any, key: string, newValue: any, oldValue: any): void;
 }
-export declare class Person extends ThorRxBase {
+export declare class MyModel extends ThorRxBase {
     fullName: string;
     location: Location;
-    age: number;
+    skills: Array<string>;
     constructor();
-    getAge(): number;
-    onChange(target: any, key: string, newValue: any, oldValue: any): void;
 }

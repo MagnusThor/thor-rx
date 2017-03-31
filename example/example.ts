@@ -1,4 +1,5 @@
-import { ThorRx, ThorRxBase, Observe } from '../thor-rx'
+import { ThorRx, ThorRxBase, Observe, ChangeModel } from '../thor-rx'
+
 export class Location extends ThorRxBase {
         lat: number
         lng: number
@@ -7,57 +8,55 @@ export class Location extends ThorRxBase {
                 this.lat = lat;
                 this.lng = lng;
         }
-        onChange(target: any, key: string, newValue: any, oldValue: any) {
-                console.log("a change occured on Location '" + key + "' to '" + newValue + "', prior value was '" + oldValue + "'");
-        }
 }
+export class MyModel extends ThorRxBase {
+      
+        // @Observe(false)
+         fullName: string;
+        
 
-export class Person extends ThorRxBase {
-        fullName: string;
+        @Observe(false) // <-- wont work as we we 'new' it.
         location: Location
-        @Observe(false, () => {
-                        console.log("bohhh!");
-        }) 
-        age: number = 10;
+
+        @Observe(false)  // <-- wont work as we we 'new' it.
+        skills: Array<string>;
+
+      
+        // age: number;
+
         constructor() {
                 super();
-                this.location = new Location(69, 13);
+                  this.skills = new Array<string>();
+                 // this.unobserve(this.skills);      
+                 this.location = new Location(69, 13);
+                // this.age = 11;
+
         }
-        getAge(){
-                return this.age;
-        }
-        onChange(target: any, key: string, newValue: any, oldValue: any) {
-                console.log("a change occured on Person '" + key + "' to '" + newValue + "', prior value was '" + oldValue + "'");
-        }
+       
+
 }
 
 
-console.log("\nExample 1");
-
-// Create an ThorRx instance for class Person
-let personObserver = new ThorRx<Person>(new Person());
-
-// Get the observed instance of Person created
-let person = personObserver.getObserver();
-
-// Will fire onChange on Person
-person.fullName = "John Doe";
-
-// will fire onChnage on Person.Location
-person.location.lat = 55;
-person.location.lng = 18;
+let myModel = new ThorRx<MyModel>(new MyModel(), (change: ChangeModel) => {
+        console.log("change", change.newValue);
+}).getObserver();
 
 
-console.log("\n")
+ myModel.location.lat = 69.3;
 
 
-console.log("Age = ", person.getAge());
+ myModel.skills.push("c++");
+ myModel.skills.push("typescript");
+ myModel.skills.push("javascript");
 
-console.log("\n")
+// myModel.skills.splice(myModel.skills.indexOf("typescript"), 1);
 
 
-console.log("\n");
-console.log(person);
+ myModel.fullName = "Doc Holliday";
 
-console.log("\n");
+//myModel.age = 12;
+
+
+
+
 
