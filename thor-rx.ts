@@ -29,6 +29,9 @@ export class ThorRxBase {
         unobserve(target: any): void {
                 Reflect.defineMetadata("isObserved", false, target)
         }
+        getName() {
+                    return (<any>this).constructor.name;
+        }
 }
 
 /**
@@ -54,20 +57,17 @@ class ThorRxArrayHandler<T> implements ProxyHandler<T>{
         }
         get(target: any, key: PropertyKey, receiver: any) {
                 let self = this;
-
-
                 if (key === "splice") {
                         return function (start, end) {
                                 let removed = target.slice(start, start + end);
                                 let added = (arguments.length > 1 ? arguments.length - 2 : 0);
                                 target.splice.apply(target, arguments);
                                 if (self.isObseved(target)) {
-                                        let change = new ChangeModel(target,
+                                        let change = new ChangeModel(target,key,
                                                 removed.length === 0 ? "add" : "remove",
                                                 target[start], null);
                                         self.fnChanges(change);
-                                }
-
+                                 }
                         }
 
                 }
@@ -76,25 +76,21 @@ class ThorRxArrayHandler<T> implements ProxyHandler<T>{
                                 return this.splice(this.length, 0, item);
                         }
                 }
-
                 if (key === "pop") {
                         return function () {
                                 return this.splice(this.length - 1, 1);
                         }
                 }
-
                 if (key === "unshift") {
                         return function (item) {
                                 return this.splice(0, 0, item);
                         }
                 }
-
                 if (key === "shift") {
                         return function () {
                                 return this.splice(0, 1);
                         }
                 }
-
                 const result = Reflect.get(target, key, receiver)
                 return result;
         }
@@ -118,11 +114,9 @@ class ThorRxHandler<T> implements ProxyHandler<T>{
                 return result;
         }
         set(target: T, key: PropertyKey, value: any, receiver: any) {
-
-
                 const oldValue = Reflect.get(target, key, receiver)
                 if (this.isObseved(target, key.toString()))
-                        this.fnChanges(new ChangeModel(target, "update", value, oldValue))
+                        this.fnChanges(new ChangeModel(target,key, "update", value, oldValue))
                 return Reflect.set(target, key, value, receiver)
         }
 
@@ -139,7 +133,10 @@ class ThorRxHandler<T> implements ProxyHandler<T>{
 }
 export class ChangeModel {
         timeStamp: Date;
-        constructor(public target: any, public type: string, public newValue: any, public oldValue: any) {
+        parentType: string
+        constructor(public target: any,public key:PropertyKey, public type: string, public newValue: any, public oldValue: any) {
+                
+                this.parentType = target.constructor.name || typeof(target);
                 this.timeStamp = new Date();
         }
 }

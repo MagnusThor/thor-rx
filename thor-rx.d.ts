@@ -4,14 +4,17 @@ export declare class ThorRxBase {
     constructor();
     observe(target: any): void;
     unobserve(target: any): void;
+    getName(): any;
 }
 export declare class ChangeModel {
     target: any;
+    key: PropertyKey;
     type: string;
     newValue: any;
     oldValue: any;
     timeStamp: Date;
-    constructor(target: any, type: string, newValue: any, oldValue: any);
+    parentType: string;
+    constructor(target: any, key: PropertyKey, type: string, newValue: any, oldValue: any);
 }
 export declare class ThorRx<T extends ThorRxBase> {
     private obj;

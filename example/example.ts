@@ -38,7 +38,7 @@ export class MyModel extends ThorRxBase {
 
 
 let myModel = new ThorRx<MyModel>(new MyModel(), (change: ChangeModel) => {
-        console.log("change", change.newValue);
+        console.log("change", change.newValue,change.type,change.key,change.parentType);
 }).getObserver();
 
 
@@ -49,7 +49,7 @@ let myModel = new ThorRx<MyModel>(new MyModel(), (change: ChangeModel) => {
  myModel.skills.push("typescript");
  myModel.skills.push("javascript");
 
-// myModel.skills.splice(myModel.skills.indexOf("typescript"), 1);
+ myModel.skills.splice(myModel.skills.indexOf("typescript"), 1);
 
 
  myModel.fullName = "Doc Holliday";

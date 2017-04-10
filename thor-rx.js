@@ -15,6 +15,9 @@ class ThorRxBase {
     unobserve(target) {
         Reflect.defineMetadata("isObserved", false, target);
     }
+    getName() {
+        return this.constructor.name;
+    }
 }
 exports.ThorRxBase = ThorRxBase;
 class ThorRxArrayHandler {
@@ -38,7 +41,7 @@ class ThorRxArrayHandler {
                 let added = (arguments.length > 1 ? arguments.length - 2 : 0);
                 target.splice.apply(target, arguments);
                 if (self.isObseved(target)) {
-                    let change = new ChangeModel(target, removed.length === 0 ? "add" : "remove", target[start], null);
+                    let change = new ChangeModel(target, key, removed.length === 0 ? "add" : "remove", target[start], null);
                     self.fnChanges(change);
                 }
             };
@@ -80,7 +83,7 @@ class ThorRxHandler {
     set(target, key, value, receiver) {
         const oldValue = Reflect.get(target, key, receiver);
         if (this.isObseved(target, key.toString()))
-            this.fnChanges(new ChangeModel(target, "update", value, oldValue));
+            this.fnChanges(new ChangeModel(target, key, "update", value, oldValue));
         return Reflect.set(target, key, value, receiver);
     }
     get(target, key, receiver) {
@@ -91,11 +94,13 @@ class ThorRxHandler {
     }
 }
 class ChangeModel {
-    constructor(target, type, newValue, oldValue) {
+    constructor(target, key, type, newValue, oldValue) {
         this.target = target;
+        this.key = key;
         this.type = type;
         this.newValue = newValue;
         this.oldValue = oldValue;
+        this.parentType = target.constructor.name || typeof (target);
         this.timeStamp = new Date();
     }
 }

@@ -34,11 +34,12 @@ __decorate([
 ], MyModel.prototype, "skills", void 0);
 exports.MyModel = MyModel;
 let myModel = new thor_rx_1.ThorRx(new MyModel(), (change) => {
-    console.log("change", change.newValue);
+    console.log("change", change.newValue, change.type, change.key, change.parentType);
 }).getObserver();
 myModel.location.lat = 69.3;
 myModel.skills.push("c++");
 myModel.skills.push("typescript");
 myModel.skills.push("javascript");
+myModel.skills.splice(myModel.skills.indexOf("typescript"), 1);
 myModel.fullName = "Doc Holliday";
 //# sourceMappingURL=example.js.map
